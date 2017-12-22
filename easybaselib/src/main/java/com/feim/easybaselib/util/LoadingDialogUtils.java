@@ -16,7 +16,10 @@ public class LoadingDialogUtils {
 
     private static ProgressDialog progressDialog;
 
-    private static void showProgressLoading() {
+    /**
+     * 默认载入loading
+     */
+    public static void showLoadingDialog() {
         try {
             if (progressDialog == null) {
                 progressDialog = new ProgressDialog(ActivityStackManager.getInstance().getTopActivity(), "请稍候");
@@ -29,7 +32,12 @@ public class LoadingDialogUtils {
         }
     }
 
-    private static void showProgressLoading(String message) {
+    /**
+     * 载入默认loading 自定义message
+     *
+     * @param message
+     */
+    public static void showLoadingDialog(String message) {
         try {
             if (progressDialog == null) {
                 progressDialog = new ProgressDialog(ActivityStackManager.getInstance().getTopActivity(), null == message ? "请稍候" : message);
@@ -40,23 +48,6 @@ public class LoadingDialogUtils {
         } catch (Exception e) {
             Log.e(TAG, "progressDialog启动失败");
         }
-    }
-
-    /**
-     * 默认载入loading
-     */
-    static void showLoadingDialog() {
-        showLoadingDialog();
-    }
-
-
-    /**
-     * 载入默认loading 自定义message
-     *
-     * @param message
-     */
-    static void showLoadingDialog(String message) {
-        showLoadingDialog(message);
     }
 
     /**

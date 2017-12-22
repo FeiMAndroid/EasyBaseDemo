@@ -2,12 +2,15 @@ package com.feim.easybasedemo;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
+import android.widget.Toast;
 
-import com.feim.easybaselib.EasyBaseActivity;
+import com.feim.easybaselib.activity.EasyBaseActivity;
 import com.feim.easybaselib.entity.EventCenter;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class MainActivity extends EasyBaseActivity {
 
@@ -16,22 +19,21 @@ public class MainActivity extends EasyBaseActivity {
     private MyRecyclerAdapter recycleAdapter;
 
     @Override
-    protected void initContentView(Bundle savedInstanceState, Bundle extras) {
-        setContentView(R.layout.activity_main);
-        recyclerView = (RecyclerView) findViewById(R.id.rv);
-        initData();
-        recycleAdapter = new MyRecyclerAdapter(MainActivity.this, mData);
-        recyclerView.setAdapter(recycleAdapter);
+    protected int initContentView(Bundle savedInstanceState, Bundle extras) {
+        return R.layout.activity_main;
     }
 
     @Override
-    protected void initTitle() {
-        setTitle("首页");
+    protected String initTitle() {
+        return "首页";
     }
 
     @Override
     protected void initView() {
-
+        recyclerView = (RecyclerView) findViewById(R.id.rv);
+        initData();
+        recycleAdapter = new MyRecyclerAdapter(MainActivity.this, mData);
+        recyclerView.setAdapter(recycleAdapter);
     }
 
     @Override
@@ -41,6 +43,17 @@ public class MainActivity extends EasyBaseActivity {
     @Override
     protected void onEventComing(EventCenter center) {
 
+    }
+
+    @Override
+    protected int getMenuRes() {
+        return R.menu.addr_toolbar_menu;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        Toast.makeText(mContext,"点击",Toast.LENGTH_SHORT).show();
+        return super.onMenuItemClick(menuItem);
     }
 
     private void initData() {
