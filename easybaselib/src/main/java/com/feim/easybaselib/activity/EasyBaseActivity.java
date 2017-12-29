@@ -3,7 +3,6 @@ package com.feim.easybaselib.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.CheckResult;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.Nullable;
@@ -15,14 +14,23 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.feim.easybaselib.R;
+import com.feim.easybaselib.callback.EmptyCallback;
+import com.feim.easybaselib.callback.ErrorCallback;
+import com.feim.easybaselib.callback.LoadingCallback;
+import com.feim.easybaselib.callback.PlaceholderCallback;
+import com.feim.easybaselib.callback.TimeoutCallback;
 import com.feim.easybaselib.entity.EventCenter;
 import com.feim.easybaselib.util.ActivityStackManager;
 import com.feim.easybaselib.util.EmptyUtils;
+import com.kingja.loadsir.callback.Callback;
+import com.kingja.loadsir.core.LoadService;
+import com.kingja.loadsir.core.LoadSir;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.ref.WeakReference;
+
 import butterknife.ButterKnife;
 import me.yokeyword.fragmentation.SupportActivity;
 
@@ -35,6 +43,7 @@ public abstract class EasyBaseActivity extends SupportActivity implements Toolba
     protected Context mContext;
     protected Toolbar mToolbar;
     protected FrameLayout mContent;
+    protected LoadService loadService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,8 +57,8 @@ public abstract class EasyBaseActivity extends SupportActivity implements Toolba
 
         mContent = (FrameLayout) findViewById(R.id.content);
         View view = LayoutInflater.from(this).inflate(initContentView(savedInstanceState, extras), mContent, false);
-        ButterKnife.bind(view);
         mContent.addView(view);
+        ButterKnife.bind(this);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         String mTitle = initTitle();
@@ -109,10 +118,11 @@ public abstract class EasyBaseActivity extends SupportActivity implements Toolba
 
     /**
      * 设置menu资源id
+     *
      * @return menu资源id
      */
     @MenuRes
-    protected abstract int getMenuRes();
+    protected abstract int initMenuRes();
 
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
@@ -121,7 +131,10 @@ public abstract class EasyBaseActivity extends SupportActivity implements Toolba
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(getMenuRes(), menu);
+        int menuId = initMenuRes();
+        if (menuId != 0) {
+            getMenuInflater().inflate(initMenuRes(), menu);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -140,5 +153,45 @@ public abstract class EasyBaseActivity extends SupportActivity implements Toolba
         EventBus.getDefault().unregister(this);
         ActivityStackManager.getInstance().removeActivity(new WeakReference<Activity>(this));
         super.onDestroy();
+    }
+
+    protected void showLoading() {
+        if (loadService == null) {
+            loadService = LoadSir.getDefault().register(mContent, new Callback.OnReloadListener() {
+                @Override
+                public void onReload(View v) {
+                    initLogic();
+                }
+            });
+        }
+        loadService.showCallback(LoadingCallback.class);
+    }
+
+    protected void showPlaceHolder() {
+        if (loadService == null) {
+            loadService = LoadSir.getDefault().register(mContent, new Callback.OnReloadListener() {
+                @Override
+                public void onReload(View v) {
+                    initLogic();
+                }
+            });
+        }
+        loadService.showCallback(PlaceholderCallback.class);
+    }
+
+    protected void showEmpty() {
+        loadService.showCallback(EmptyCallback.class);
+    }
+
+    protected void showTimeout() {
+        loadService.showCallback(TimeoutCallback.class);
+    }
+
+    protected void showError() {
+        loadService.showCallback(ErrorCallback.class);
+    }
+
+    protected void showSuccess() {
+        loadService.showSuccess();
     }
 }

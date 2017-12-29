@@ -29,4 +29,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:26.+'
     testCompile 'junit:junit:4.12'
     compile project(':easybaselib')
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }

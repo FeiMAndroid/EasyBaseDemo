@@ -54,7 +54,6 @@ public class LoadingDialogUtils {
      * 取消loading
      */
     public static void cancelLoadingDialog() {
-
         if (progressDialog != null && progressDialog.isShowing()) {
             try {
                 progressDialog.dismiss();
